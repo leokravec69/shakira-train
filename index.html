@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Дрессировка">
+<meta name="theme-color" content="#c8692b">
+<title>Шакира: дрессировка</title>
+<style>
+/* ===================== СТИЛИ ===================== */
+:root{
+  --bg:#fbf3e8; --card:#fffaf3; --ink:#3b2416; --muted:#8a6a55;
+  --accent:#c8692b; --accent2:#e9a05a; --choc:#5a3420; --cream:#f6e6d0;
+  --good:#4f8a3c; --bad:#c0442c; --warn:#c98318;
+  --fur:#d9843a; --furL:#eba15c; --furD:#b9672a;
+  --r:18px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Rounded","Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.45}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+#app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(251,243,232,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid #f0dfc8}
+header h1{flex:1;margin:0;font-size:17px;font-weight:700;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hbtn{width:40px;height:40px;border:0;border-radius:12px;background:transparent;font-size:22px;color:var(--choc);cursor:pointer}
+.hbtn:active{background:var(--cream)}
+.hbtn.hide{visibility:hidden}
+main{flex:1;padding:14px 14px 40px}
+.card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:0 1px 0 #f0dfc8,0 6px 18px rgba(90,52,32,.06)}
+h2{margin:4px 0 6px;font-size:22px}
+h3{margin:0 0 8px;font-size:17px}
+p{margin:6px 0}
+.muted{color:var(--muted);font-size:14px}
+.passport{font-style:italic;color:var(--choc);font-size:14px}
+.center{text-align:center}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px 16px;font-size:16px;font-weight:600;cursor:pointer;background:var(--cream);color:var(--choc);margin-bottom:10px;text-align:center;font-family:inherit}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--accent);color:#fff;box-shadow:0 4px 0 #9e4f1c}
+.btn.primary:active{box-shadow:0 2px 0 #9e4f1c;transform:translateY(2px)}
+.btn.big{padding:18px;font-size:18px}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn.ghost{background:transparent;border:2px solid var(--cream)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{background:var(--card);border-radius:var(--r);padding:16px 12px;text-align:center;border:0;cursor:pointer;font-family:inherit;color:var(--ink);box-shadow:0 1px 0 #f0dfc8,0 6px 18px rgba(90,52,32,.06)}
+.tile .ic{font-size:28px;display:block;margin-bottom:4px}
+.tile b{font-size:15px}
+.tile:active{transform:scale(.97)}
+.dogwrap{max-width:230px;margin:0 auto}
+.hero{text-align:center}
+/* шкалы */
+.meters{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.meter{font-size:12px;color:var(--muted);text-align:center}
+.meter .bar{height:7px;border-radius:5px;background:#f0dfc8;overflow:hidden;margin-top:4px}
+.meter .bar i{display:block;height:100%;background:var(--accent2);transition:width .4s}
+.meter.warn .bar i{background:var(--bad)}
+.skillbar{height:10px;border-radius:6px;background:#f0dfc8;overflow:hidden;margin:6px 0 2px}
+.skillbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .4s}
+/* тренировка */
+.stage{position:relative;background:linear-gradient(#fff6ea,#f7e3c8);border-radius:var(--r);padding:10px 10px 6px;margin-bottom:10px;overflow:hidden}
+.stage .dogwrap{max-width:220px}
+.status{background:#fff;border-radius:12px;padding:8px 12px;font-size:15px;text-align:center;min-height:40px;display:flex;align-items:center;justify-content:center}
+.fb{position:absolute;top:10px;left:50%;transform:translate(-50%,-8px);padding:6px 12px;border-radius:20px;font-weight:700;font-size:14px;opacity:0;transition:all .25s;white-space:nowrap;pointer-events:none;max-width:92%;overflow:hidden;text-overflow:ellipsis}
+.fb.show{opacity:1;transform:translate(-50%,0)}
+.fb.good{background:var(--good);color:#fff}.fb.bad{background:var(--bad);color:#fff}.fb.warn{background:var(--warn);color:#fff}
+.treat{position:absolute;left:50%;bottom:80px;font-size:34px;opacity:0;pointer-events:none}
+.treat.fly{animation:fly .8s ease-out}
+@keyframes fly{0%{opacity:1;transform:translate(60px,40px) scale(.6)}60%{opacity:1;transform:translate(-10px,-30px) scale(1.1)}100%{opacity:0;transform:translate(-14px,-10px) scale(.4)}}
+.prog{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:2px 2px 8px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.actions .btn{flex:1 1 45%;margin:0;font-size:15px;padding:13px 8px}
+.yesrow{display:flex;align-items:center;justify-content:center;gap:18px}
+.yes{width:118px;height:118px;border-radius:50%;border:0;background:radial-gradient(circle at 35% 30%,#f0a35e,var(--accent));color:#fff;font-size:30px;font-weight:800;box-shadow:0 6px 0 #9e4f1c,0 10px 24px rgba(200,105,43,.35);cursor:pointer;font-family:inherit}
+.yes:active{transform:translateY(4px);box-shadow:0 2px 0 #9e4f1c}
+.pause{width:70px;height:70px;border-radius:50%;border:0;background:var(--cream);color:var(--choc);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.give{width:70px;height:70px;border-radius:50%;border:0;background:#fff;font-size:30px;cursor:pointer;box-shadow:0 3px 0 #e2c9a8}
+.give:active,.pause:active{transform:translateY(2px)}
+/* разбор, списки */
+.stars{font-size:34px;letter-spacing:4px}
+.pct{font-size:48px;font-weight:800;color:var(--accent);line-height:1}
+.mist{border-left:4px solid var(--bad);padding:8px 12px;background:#fff;border-radius:10px;margin:8px 0}
+.mist.good{border-color:var(--good)}
+.mist b{display:block}
+.mist .think{color:var(--muted);font-size:14px;margin-top:4px}
+ol,ul{padding-left:22px;margin:6px 0}
+li{margin:5px 0}
+.rule{background:var(--accent);color:#fff;border-radius:var(--r);padding:16px;font-size:18px;font-weight:600;margin-bottom:12px}
+.check{display:flex;gap:10px;align-items:flex-start;padding:10px 4px;border-bottom:1px solid #f3e4d0;cursor:pointer}
+.check input{width:22px;height:22px;accent-color:var(--accent);flex:none;margin-top:1px}
+.lvl{display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border-radius:14px;margin-bottom:8px;cursor:pointer;border:0;width:100%;text-align:left;font-family:inherit;color:var(--ink);box-shadow:0 1px 0 #f0dfc8}
+.lvl .n{width:38px;height:38px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--choc);flex:none}
+.lvl.done .n{background:var(--good);color:#fff}
+.lvl.open .n{background:var(--accent);color:#fff}
+.lvl.locked{opacity:.55}
+.lvl .t{flex:1}
+.lvl .t small{display:block;color:var(--muted);font-size:13px}
+.lvl .s{font-size:14px;white-space:nowrap}
+.opt{display:block;width:100%;text-align:left;padding:13px 14px;border-radius:12px;border:2px solid var(--cream);background:#fff;margin-bottom:8px;font-size:15px;cursor:pointer;font-family:inherit;color:var(--ink)}
+.opt.right{border-color:var(--good);background:#eef6ea}
+.opt.wrong{border-color:var(--bad);background:#fbece8}
+.opt[disabled]{cursor:default}
+.diary-item{padding:10px 0;border-bottom:1px solid #f3e4d0;font-size:14px}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;background:var(--cream);font-size:12px;margin-right:4px}
+/* модалка и подсказка */
+#modal{position:fixed;inset:0;background:rgba(59,36,22,.45);display:flex;align-items:flex-end;justify-content:center;z-index:20;padding:12px}
+#modal.hidden{display:none}
+#modal .card{width:100%;max-width:460px;max-height:86vh;overflow:auto;margin-bottom:env(safe-area-inset-bottom);animation:up .25s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+#hint{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:var(--choc);color:#fff;padding:10px 14px;border-radius:14px;font-size:14px;z-index:30;max-width:90%;text-align:center;opacity:0;transition:opacity .3s;pointer-events:none}
+#hint.show{opacity:1}
+
+/* ===================== СОБАКА (SVG) ===================== */
+.dog{width:100%;height:auto;display:block;overflow:visible}
+.dog .fur{fill:var(--fur)} .dog .fur-l{fill:var(--furL)} .dog .fur-d{fill:var(--furD)}
+.dog .muzzle{fill:#f3c58f} .dog .eye{fill:#2a170c} .dog .glint{fill:#fff} .dog .nose{fill:#3a2012}
+.dog .smile{fill:none;stroke:#3a2012;stroke-width:2.5;stroke-linecap:round;transition:opacity .2s}
+.dog .yawn{fill:#7a2a22;opacity:0;transition:opacity .2s} .dog .tongue{fill:#e66a7a;opacity:0;transition:opacity .2s}
+.dog .stem{fill:none;stroke:var(--furD);stroke-width:9;stroke-linecap:round}
+.dog .shadow{fill:rgba(90,52,32,.14)}
+.dog .blush{fill:#f08a7a;opacity:.35}
+.dog g,.dog ellipse{transform-box:view-box}
+.dog g{transition:transform .35s ease,opacity .3s ease}
+.dog .root{transform-origin:120px 222px}
+.dog .upper{transform-origin:120px 200px}
+.dog .head{transform-origin:120px 135px}
+.dog .earL{transform-origin:86px 86px}
+.dog .earR{transform-origin:154px 86px}
+.dog .tailIn{transform-origin:150px 165px}
+.dog .legs{transform-origin:120px 216px}
+.dog .haunch,.dog .liepaws,.dog .hind{opacity:0}
+.dog[data-pose=stand] .hind{opacity:1}
+.dog[data-pose=stand] .upper{transform:translateY(-8px)}
+.dog[data-pose=stand] .legs{transform:scaleY(1.18)}
+.dog[data-pose=sit] .haunch{opacity:1}
+.dog[data-pose=lie] .upper{transform:translateY(40px)}
+.dog[data-pose=lie] .legs{opacity:0}
+.dog[data-pose=lie] .liepaws{opacity:1}
+.dog[data-pose=lie] .tail{transform:translateY(42px)}
+.dog[data-head=away] .head{transform:rotate(-14deg) translateX(-6px)}
+.dog[data-head=away] .pupils{transform:translateX(-5px)}
+.dog[data-head=down] .head{transform:translateY(10px)}
+.dog[data-head=down] .pupils{transform:translateY(3px)}
+.dog[data-head=up] .head{transform:translateY(-4px)}
+.dog[data-head=up] .pupils{transform:translateY(-3px)}
+.dog[data-ears=perk] .earL{transform:rotate(18deg)}
+.dog[data-ears=perk] .earR{transform:rotate(-18deg)}
+.dog[data-ears=back] .earL{transform:rotate(-10deg) translateY(6px)}
+.dog[data-ears=back] .earR{transform:rotate(10deg) translateY(6px)}
+.dog[data-tail=wag] .tailIn{animation:wag .28s ease-in-out infinite alternate}
+.dog[data-tail=down] .tailIn{transform:rotate(75deg)}
+@keyframes wag{from{transform:rotate(-12deg)}to{transform:rotate(22deg)}}
+.dog[data-mouth=open] .tongue{opacity:1}
+.dog[data-mouth=yawn] .yawn{opacity:1}
+.dog[data-mouth=yawn] .smile{opacity:0}
+.dog[data-mouth=lick] .tongue{opacity:1;animation:lick .45s ease-in-out infinite alternate}
+@keyframes lick{from{transform:translateY(0)}to{transform:translateY(-13px)}}
+.dog[data-anim=jump] .root{animation:jump .5s ease-in-out infinite}
+@keyframes jump{0%,100%{transform:translateY(0)}50%{transform:translateY(-26px)}}
+.dog[data-anim=sniff] .head{animation:sniff .6s ease-in-out infinite alternate}
+@keyframes sniff{from{transform:rotate(-14deg) translate(-6px,6px)}to{transform:rotate(-14deg) translate(-6px,11px)}}
+.dog[data-anim=hide] .root{transform:scale(.85) translateY(12px)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <button class="hbtn" id="back" aria-label="Назад">‹</button>
+    <h1 id="title">Дрессировка</h1>
+    <button class="hbtn" id="snd" aria-label="Звук">🔊</button>
+  </header>
+  <main id="view"></main>
+</div>
+<div id="modal" class="hidden"><div class="card" id="modalBody"></div></div>
+<div id="hint"></div>
+
+<script>
+/* ============================================================
+   СЛОЙ 1. PET — данные питомца.
+   Для «Лапок» сюда подставляется выбранный питомец: init(petConfig)
+   ============================================================ */
+const DEFAULT_PET = {
+  id: 'shakira',
+  name: 'Шакира', nameAcc: 'Шакиру', nameIns: 'Шакирой', nameGen: 'Шакиры', nameDat: 'Шакире',
+  species: 'dog',            // 'dog' | 'cat' (контент для кошек — позже)
+  breed: 'той-пудель',
+  sex: 'f',                  // 'f' | 'm'
+  birth: '2026-06-01',
+  color: 'рыжий',
+  passportName: 'Сердолика Тайная Хранительница'
+};
+
+/* ============================================================
+   СЛОЙ 2. CONTENT — уровни, ошибки, ситуации, викторины, памятка.
+   Подстановки: {name} {nameAcc} {nameGen} {nameDat} {ona} {Ona} {ee} {ey}
+   {a} — окончание глагола прош. вр. (села/сел), {sya} — (отвернулась/отвернулся)
+   ============================================================ */
+const CONTENT = {
+ dog: {
+  rewards: [
+    {id:'korm', icon:'🟤', name:'Сухой корм', value:1, note:'Дома без отвлечений его достаточно. Можно отдавать часть дневной нормы.'},
+    {id:'syr',  icon:'🧀', name:'Кусочек сыра', value:3, note:'Очень ценно. Лучше беречь для улицы и сложных моментов.'},
+    {id:'toy',  icon:'🎾', name:'Игрушка', value:2, note:'Игра длинная — хороша как финальная награда в конце сессии.'}
+  ],
+  levels: [
+   { id:'marker', title:'Маркер «Да!»', short:'Звук, который обещает лакомство', mechanic:'marker', ready:true,
+     lesson:{
+       rule:'«Да!» = «Ты молодец, сейчас будет награда». После каждого «Да!» — лакомство. Всегда.',
+       why:'Маркер — мост между моментом, когда {name} сделал{a} правильно, и наградой. Рука с лакомством за 1 секунду не успевает, а слово успевает. Но если «Да!» хоть иногда звучит без награды, оно обесценивается.',
+       steps:['Говорите «Да!» коротко и всегда одинаково.','Сразу после «Да!» — лакомство (в течение 1–2 секунд).','Не говорите «Да!», когда {name} прыгает на вас — так вы наградите прыжки.','10–15 повторов за сессию — и маркер «заряжен».'],
+       game:'Нажимайте «Да!» в спокойный момент и сразу — кнопку награды. Пока {name} прыгает — ждите.'
+     },
+     task:{
+       title:'Зарядите маркер',
+       steps:['Возьмите 15 кусочков корма размером с горошину.','В тихой комнате: «Да!» → сразу кусочек. Ничего не требуйте от {nameGen}.','10–15 повторов, сессия 2–3 минуты.','Проверка: когда {name} отвлечётся, скажите «Да!». Повернул{sya} к вам и ждёт? Маркер заряжен — и не забудьте дать кусочек.'],
+       checklist:['Каждое «Да!» — с наградой','Не говорили «Да!» во время прыжков','Сессия не дольше 5 минут','Закончили, пока {name} ещё хотел{a} заниматься']
+     },
+     tipFail:'Если {name} не реагирует на «Да!» — возможно, {ona} сыт{a} или лакомство недостаточно ценное. Попробуйте перед кормлением и с кусочком повкуснее.'
+   },
+   { id:'name', title:'Имя и контакт глаз', short:'Имя = «посмотри на меня»', mechanic:'name', ready:true,
+     lesson:{
+       rule:'Имя говорим один раз. Посмотрел{a} в глаза — «Да!» и награда.',
+       why:'Без внимания не работает ни одна команда. Если повторять имя много раз или звать, чтобы отругать, оно превращается в фоновый шум или неприятный сигнал.',
+       steps:['Скажите имя один раз, обычным голосом.','Подождите взгляд 2–3 секунды.','Посмотрел{a} — сразу «Да!» и награда.','Не отозвал{sya} — НЕ повторяйте. Чмокните губами или отойдите на шаг, и наградите за взгляд.','Никогда не зовите по имени, чтобы ругать.'],
+       game:'Нажмите «Позвать» один раз. Как только {name} посмотрит на вас — «Да!». Не успели или не посмотрел{a} — не зовите повторно.'
+     },
+     task:{
+       title:'Имя дома',
+       steps:['10 повторов за сессию, 2 сессии в день.','Начните, когда {name} рядом и ничем интересным не увлечён{a}.','Постепенно зовите при лёгком отвлечении — например, игрушка на полу.','Зовите и из другой комнаты — и награждайте за каждый отклик.'],
+       checklist:['Имя — один раз, без повторов','«Да!» в течение 1–2 секунд после взгляда','Ни разу не позвали по имени, чтобы отругать','Сессия до 5 минут']
+     },
+     tipFail:'Уберите отвлечения, подойдите ближе, возьмите лакомство ценнее. Если {name} хочет спать — перенесите занятие.'
+   },
+   { id:'sit', title:'Сидеть', short:'Сначала рука, потом слово', mechanic:'sit', ready:true,
+     lesson:{
+       rule:'Сначала рука с лакомством, потом слово. «Сидеть» добавляем, когда {name} садится за рукой 8 раз из 10.',
+       why:'Пока поведения нет, слову не к чему «прилипнуть». Если твердить «Сидеть, сидеть, СИДЕТЬ!» без результата, {name} выучит, что эти звуки ничего не значат.',
+       steps:['Поднесите лакомство к носу.','Медленно ведите руку вверх и чуть назад, над головой. Голова идёт вверх — попа опускается.','Попа коснулась пола — «Да!» и награда.','Не давите руками на спину и попу — у той-пуделя хрупкие суставы.','Когда садится за рукой уверенно — говорите «Сидеть» один раз ПЕРЕД движением руки.'],
+       game:'Используйте «Приманку». Кнопка «Сидеть» заработает, когда навык дойдёт до 50%. Отмечайте «Да!» в момент посадки.'
+     },
+     task:{
+       title:'Сидеть дома',
+       steps:['5–8 повторов приманкой, 2–3 сессии в день.','Держите лакомство у самого носа: если рука высоко — {name} прыгает.','Получается 8 из 10 — добавьте слово перед жестом.','Дальше уменьшайте жест: пустая рука, награда из другой руки.'],
+       checklist:['Не давили руками на спину','Награда в течение 1–2 секунд после посадки','Слово — один раз, не повторяли','Закончили на удачном повторе']
+     },
+     tipFail:'Если прыгает — рука слишком высоко. Если пятится — занимайтесь у стены или в углу, чтобы отступать было некуда.'
+   },
+   { id:'down',   title:'Лежать', short:'Приманка от носа вниз к лапам', ready:false },
+   { id:'come',   title:'Ко мне', short:'Самый важный навык безопасности', ready:false },
+   { id:'leave',  title:'«Оставь» / «Фу»', short:'Еда и предметы на полу', ready:false },
+   { id:'place',  title:'Место', short:'Коврик, где спокойно и хорошо', ready:false },
+   { id:'leash',  title:'Поводок без натяжения', short:'Идём рядом, а не тянем', ready:false },
+   { id:'toilet', title:'Туалет', short:'Режим и похвала на месте', ready:false },
+   { id:'groom',  title:'Уход и груминг', short:'Лапы, расчёска, фен, стол', ready:false },
+   { id:'alone',  title:'Одна дома', short:'Спокойно ждать без паники', ready:false },
+   { id:'street', title:'На улице', short:'Навыки среди отвлечений', ready:false }
+  ],
+  mistakes: {
+    early:     {title:'Рано', text:'«Да!» прозвучало до того, как нужное поведение случилось.', think:'«Меня хвалят когда попало — за что именно?»'},
+    late:      {title:'Поздно', text:'Маркер прозвучал после окна в 1–2 секунды.', think:'«Похвалили за то, что я отвлекл{a}сь…» — закрепляется не то поведение.'},
+    missed:    {title:'Упущенный момент', text:'Нужное поведение было, а маркера не было.', think:'«Сделал{a} — и ничего. Зачем повторять?»'},
+    noreward:  {title:'«Да!» без награды', text:'После маркера не было лакомства.', think:'«Да!» перестаёт что-то значить. Маркер — это обещание, его нельзя нарушать.'},
+    jumpReward:{title:'Наградили прыжки', text:'Вы отметили момент, когда {name} прыгал{a} на вас.', think:'«Прыгать выгодно! Буду прыгать чаще.»'},
+    repeat:    {title:'Повтор сигнала', text:'Имя или команда прозвучали несколько раз подряд.', think:'«С первого раза можно не реагировать — всё равно повторят.»'},
+    stress:    {title:'Не заметили стресс', text:'Вы продолжили, когда {name} зевал{a} и облизывал{a}сь.', think:'«Мне тяжело, а меня не слышат.» В стрессе обучение почти не идёт.'},
+    long:      {title:'Слишком длинная сессия', text:'Больше 5 минут подряд — внимание падает.', think:'«Я устал{a}, отстаньте…» Лучше 2–3 коротких сессии в день.'},
+    situation: {title:'Ошибка в ситуации', text:'', think:''}
+  },
+  situations: [
+    { q:'{name} схватил{a} носок и убегает.', opts:[
+      {t:'Догнать, отобрать и отругать', ok:false, trust:-15, e:'Погоня — лучшая игра, а ругань учит прятать находки и убегать с ними ещё быстрее.'},
+      {t:'Предложить обмен: лакомство за носок', ok:true, trust:5, e:'Верно! Обмен учит, что отдавать выгодно. А носки лучше убрать — тойчику опасно их глотать.'},
+      {t:'Совсем не обращать внимания', ok:false, trust:0, e:'Носок можно проглотить — для маленькой собаки это опасно. Лучше обмен и убрать вещи с пола.'} ]},
+    { q:'Нашли лужу на полу — сделана час назад.', opts:[
+      {t:'Ткнуть носом и отругать', ok:false, trust:-20, e:'Собака не связывает наказание с давним действием. Она запомнит только, что вы опасны рядом с лужей, — и начнёт прятаться.'},
+      {t:'Молча убрать и чаще выводить после сна, еды и игры', ok:true, trust:3, e:'Верно! Убирайте ферментным средством (без запаха нашатыря) и хвалите за туалет в нужном месте сразу, на месте.'},
+      {t:'Отругать без тыканья', ok:false, trust:-10, e:'Поздно: через час собака уже не понимает, за что ругают. Работает только режим и похвала в момент.'} ]},
+    { q:'Пора стричь когти. Как подозвать?', opts:[
+      {t:'Позвать «Ко мне!» и сразу стричь', ok:false, trust:-12, e:'Так «Ко мне» начинает означать неприятное — и подзыв портится. А подзыв спасает жизнь на улице.'},
+      {t:'Подойти самому, спокойно взять, награждать за каждую лапу', ok:true, trust:4, e:'Верно! Неприятное — без команды подзыва. Начинайте с 1–2 когтей за раз и щедро награждайте.'},
+      {t:'Позвать «Ко мне», наградить и отпустить. Потом подойти самому', ok:true, trust:4, e:'Тоже хорошо: подзыв остаётся приятным, а за неприятным вы идёте сами.'} ]},
+    { q:'{name} прыгает на вас и лает, требуя внимания.', opts:[
+      {t:'Оттолкнуть и сказать «Нельзя!»', ok:false, trust:-8, e:'Для щенка любое внимание — награда, даже недовольное. Прыжки станут чаще.'},
+      {t:'Отвернуться и замереть. Как только 4 лапы на полу — «Да!» и награда', ok:true, trust:3, e:'Верно! Прыжки не приносят ничего, а спокойствие приносит внимание и лакомство.'},
+      {t:'Взять на руки, чтобы успокоилась', ok:false, trust:0, e:'Это награда за прыжки и лай. В следующий раз будет прыгать настойчивее.'} ]},
+    { q:'Во время урока {name} зевает и облизывает нос.', opts:[
+      {t:'Продолжить — осталось всего 3 повтора', ok:false, trust:-6, e:'Это сигналы напряжения. Продолжая, вы учите, что занятия — это неприятно.'},
+      {t:'Пауза, затем очень лёгкое задание — и закончить на успехе', ok:true, trust:4, e:'Верно! Лучше короче, но с хорошим финалом.'} ]}
+  ],
+  feelings: [
+    {dog:{pose:'sit',head:'look',ears:'normal',tail:'still',mouth:'smile',anim:'none'}, a:'calm',    e:'Расслабленная поза, мягкий взгляд, хвост спокоен. Можно учиться.'},
+    {dog:{pose:'stand',head:'look',ears:'perk',tail:'wag',mouth:'open',anim:'none'},  a:'happy',   e:'Хвост машет широко, рот приоткрыт, уши вперёд — радость и интерес.'},
+    {dog:{pose:'sit',head:'away',ears:'normal',tail:'still',mouth:'yawn',anim:'none'},a:'stress',  e:'Зевок не перед сном + отведённый взгляд = «мне некомфортно». Сделайте паузу.'},
+    {dog:{pose:'sit',head:'away',ears:'normal',tail:'still',mouth:'lick',anim:'none'},a:'stress',  e:'Частое облизывание носа — признак напряжения.'},
+    {dog:{pose:'lie',head:'down',ears:'back',tail:'down',mouth:'smile',anim:'hide'},  a:'fear',    e:'Прижатые уши, хвост вниз, тело к полу — страх. Не тяните к себе, дайте безопасное место.'},
+    {dog:{pose:'stand',head:'look',ears:'perk',tail:'wag',mouth:'open',anim:'jump'},  a:'excited', e:'Прыжки и суета — перевозбуждение. Сначала успокоить, потом учить.'}
+  ],
+  feelOpts: [
+    {id:'calm',t:'Спокойствие, готовность учиться'},{id:'happy',t:'Радость, интерес'},
+    {id:'stress',t:'Напряжение, стресс'},{id:'fear',t:'Страх'},{id:'excited',t:'Перевозбуждение'}
+  ],
+  rewardQuiz: [
+    {q:'Дома, без отвлечений, отрабатываем «Сидеть».', opts:['korm','syr','toy'], a:'korm', e:'Дома корма достаточно, а ценное лучше приберечь для сложных условий.'},
+    {q:'Во дворе рядом другая собака, нужно отозвать «Ко мне».', opts:['korm','syr','toy'], a:'syr', e:'Отвлечение сильное — нужна награда ценнее, чем собака рядом.'},
+    {q:'Конец удачной сессии, хочется закончить на радостной ноте.', opts:['korm','syr','toy'], a:'toy', e:'Игра — отличный финал: занятие запоминается как праздник.'},
+    {q:'Первое знакомство с расчёской.', opts:['korm','syr','toy'], a:'syr', e:'Непривычное и неприятное связываем с самым ценным лакомством.'},
+    {q:'{name} только что плотно поел{a}.', opts:['korm','syr','later'], a:'later', e:'Сытой собаке награда неинтересна. Лучше заниматься до кормления.'}
+  ],
+  memo: [
+    'Сессия — 3–5 минут, 2–3 раза в день.',
+    'Заканчивайте на успехе, пока собаке ещё интересно.',
+    'Лакомство — размером с горошину: у той-пуделя маленький желудок. Часть дневной нормы корма можно отдавать как награду.',
+    'Одна команда — одно слово, один раз.',
+    'Награда — в течение 1–2 секунд. Помогает маркер «Да!».',
+    'Сначала дома, потом во дворе, потом на улице.',
+    'Хорошее — награждаем, нежелательное — предотвращаем или игнорируем. Без наказаний.',
+    'Зевает, облизывается, отворачивается — пауза.',
+    'Не зовите «Ко мне», чтобы сделать неприятное.',
+    'Обратитесь к кинологу или ветеринару, если есть агрессия, сильный страх, проблемы с туалетом после 6–7 месяцев или резкие изменения поведения.'
+  ]
+ }
+ // cat: { ... } — позже, в том же формате
+};
+
+/* ============================================================
+   СЛОЙ 3. ENGINE — логика, состояние собаки, экраны, сохранение.
+   ============================================================ */
+let PET, C, D, S = null, homeIv = null, AC = null;
+const $ = s => document.querySelector(s);
+const view = () => $('#view');
+const clamp = (v, a=0, b=100) => Math.max(a, Math.min(b, v));
+const rnd = (a, b) => a + Math.random()*(b-a);
+const shuffle = arr => arr.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+
+/* --- текст с подстановками --- */
+function t(s){
+  const f = PET.sex === 'f';
+  return String(s)
+    .replace(/\{name\}/g, PET.name).replace(/\{nameAcc\}/g, PET.nameAcc)
+    .replace(/\{nameGen\}/g, PET.nameGen).replace(/\{nameDat\}/g, PET.nameDat)
+    .replace(/\{Ona\}/g, f?'Она':'Он').replace(/\{ona\}/g, f?'она':'он')
+    .replace(/\{ee\}/g, f?'её':'его').replace(/\{ey\}/g, f?'ей':'ему')
+    .replace(/\{sya\}/g, f?'ась':'ся').replace(/\{a\}/g, f?'а':'');
+}
+
+/* --- хранение (ключи с префиксом train_<petId>_) --- */
+const store = {
+  key(){ return 'train_' + PET.id + '_state'; },
+  load(){ try{ return JSON.parse(localStorage.getItem(this.key())) || null; }catch(e){ return null; } },
+  save(d){ try{ localStorage.setItem(this.key(), JSON.stringify(d)); }catch(e){} }
+};
+const save = () => store.save(D);
+
+/* --- возраст --- */
+function ageText(){
+  const b = new Date(PET.birth), n = new Date();
+  let m = (n.getFullYear()-b.getFullYear())*12 + (n.getMonth()-b.getMonth());
+  if (n.getDate() < b.getDate()) m--;
+  if (m < 1) return 'меньше месяца';
+  if (m < 12) return m + ' мес.';
+  const y = Math.floor(m/12), r = m%12;
+  return y + ' г.' + (r ? ' ' + r + ' мес.' : '');
+}
+
+/* --- звук (Web Audio) --- */
+function audioInit(){
+  if (!AC){ try{ AC = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+  if (AC && AC.state === 'suspended') AC.resume();
+}
+function tone(f, d, type='sine', g=.15, f2){
+  if (!D.sound || !AC) return;
+  const o = AC.createOscillator(), v = AC.createGain(), t0 = AC.currentTime;
+  o.type = type; o.frequency.setValueAtTime(f, t0);
+  if (f2) o.frequency.exponentialRampToValueAtTime(f2, t0+d);
+  v.gain.setValueAtTime(g, t0); v.gain.exponentialRampToValueAtTime(.001, t0+d);
+  o.connect(v).connect(AC.destination); o.start(t0); o.stop(t0+d+.02);
+}
+function bark(){
+  if (!D.sound || !AC) return;
+  const t0 = AC.currentTime;
+  [0, .2].forEach(dt => {
+    const o = AC.createOscillator(), f = AC.createBiquadFilter(), v = AC.createGain();
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(950, t0+dt); o.frequency.exponentialRampToValueAtTime(420, t0+dt+.11);
+    f.type = 'bandpass'; f.frequency.value = 1300; f.Q.value = 1.4;
+    v.gain.setValueAtTime(.0001, t0+dt); v.gain.exponentialRampToValueAtTime(.4, t0+dt+.012);
+    v.gain.exponentialRampToValueAtTime(.001, t0+dt+.14);
+    o.connect(f).connect(v).connect(AC.destination); o.start(t0+dt); o.stop(t0+dt+.16);
+  });
+}
+function sfx(k){
+  audioInit();
+  if (k==='click') tone(1900, .05, 'square', .07);
+  if (k==='ok'){ tone(660, .12, 'sine', .12); setTimeout(()=>tone(990, .18, 'sine', .12), 110); }
+  if (k==='bad') tone(240, .2, 'triangle', .1);
+  if (k==='bark') bark();
+}
+
+/* --- собака: SVG и состояния --- */
+function dogSVG(){
+  return `<svg class="dog" viewBox="0 0 240 240" data-pose="sit" data-head="look" data-ears="normal" data-tail="still" data-mouth="smile" data-anim="none" aria-label="${PET.name}">
+  <ellipse class="shadow" cx="120" cy="222" rx="72" ry="8"/>
+  <g class="root">
+    <g class="tail"><g class="tailIn">
+      <path class="stem" d="M148 168 Q166 152 170 132"/>
+      <circle class="fur" cx="172" cy="124" r="16"/><circle class="fur-l" cx="165" cy="116" r="9"/>
+    </g></g>
+    <g class="hind">
+      <rect class="fur-d" x="84" y="176" width="15" height="40" rx="7"/><rect class="fur-d" x="141" y="176" width="15" height="40" rx="7"/>
+      <circle class="fur-d" cx="91" cy="214" r="10"/><circle class="fur-d" cx="149" cy="214" r="10"/>
+    </g>
+    <g class="haunch">
+      <circle class="fur-d" cx="84" cy="194" r="26"/><circle class="fur-d" cx="156" cy="194" r="26"/>
+      <ellipse class="fur" cx="74" cy="216" rx="15" ry="8"/><ellipse class="fur" cx="166" cy="216" rx="15" ry="8"/>
+    </g>
+    <g class="legs">
+      <rect class="fur" x="101" y="170" width="16" height="46" rx="8"/><rect class="fur" x="123" y="170" width="16" height="46" rx="8"/>
+      <circle class="fur-l" cx="109" cy="212" r="11"/><circle class="fur-l" cx="131" cy="212" r="11"/>
+    </g>
+    <g class="liepaws">
+      <ellipse class="fur-l" cx="98" cy="214" rx="19" ry="9"/><ellipse class="fur-l" cx="142" cy="214" rx="19" ry="9"/>
+    </g>
+    <g class="upper">
+      <ellipse class="fur" cx="120" cy="162" rx="40" ry="38"/>
+      <circle class="fur-l" cx="104" cy="152" r="15"/><circle class="fur-l" cx="136" cy="152" r="15"/><circle class="fur-l" cx="120" cy="142" r="16"/>
+      <g class="head">
+        <g class="earL"><ellipse class="fur-d" cx="80" cy="112" rx="17" ry="30"/><circle class="fur-d" cx="76" cy="134" r="12"/><circle class="fur-d" cx="84" cy="94" r="12"/></g>
+        <g class="earR"><ellipse class="fur-d" cx="160" cy="112" rx="17" ry="30"/><circle class="fur-d" cx="164" cy="134" r="12"/><circle class="fur-d" cx="156" cy="94" r="12"/></g>
+        <circle class="fur" cx="120" cy="100" r="36"/>
+        <circle class="fur-l" cx="98" cy="72" r="15"/><circle class="fur-l" cx="142" cy="72" r="15"/>
+        <circle class="fur-l" cx="120" cy="62" r="18"/><circle class="fur-l" cx="107" cy="58" r="12"/><circle class="fur-l" cx="133" cy="58" r="12"/>
+        <ellipse class="muzzle" cx="120" cy="120" rx="20" ry="15"/>
+        <ellipse class="blush" cx="96" cy="114" rx="6" ry="4"/><ellipse class="blush" cx="144" cy="114" rx="6" ry="4"/>
+        <g class="pupils">
+          <circle class="eye" cx="105" cy="98" r="6.5"/><circle class="eye" cx="135" cy="98" r="6.5"/>
+          <circle class="glint" cx="107" cy="96" r="2"/><circle class="glint" cx="137" cy="96" r="2"/>
+        </g>
+        <ellipse class="nose" cx="120" cy="112" rx="7" ry="5"/>
+        <path class="smile" d="M112 123 Q120 130 128 123"/>
+        <ellipse class="yawn" cx="120" cy="127" rx="7" ry="9"/>
+        <ellipse class="tongue" cx="120" cy="131" rx="5" ry="6"/>
+      </g>
+    </g>
+  </g>
+</svg>`;
+}
+function setDog(o, el){
+  el = el || document.querySelector('#stage .dog') || document.querySelector('.dog');
+  if (!el) return;
+  for (const k in o) el.setAttribute('data-' + k, o[k]);
+}
+const DOG_RESET = {pose:'sit', head:'look', ears:'normal', tail:'still', mouth:'smile', anim:'none'};
+
+/* --- интерфейс: заголовок, модалка, подсказка --- */
+let backTo = null;
+function header(title, back){
+  $('#title').textContent = title;
+  backTo = back || null;
+  $('#back').classList.toggle('hide', !back);
+  $('#snd').textContent = D.sound ? '🔊' : '🔇';
+}
+function openModal(html){ $('#modalBody').innerHTML = html; $('#modal').classList.remove('hidden'); }
+function closeModal(){ $('#modal').classList.add('hidden'); }
+let hintT;
+function hint(text){
+  const h = $('#hint'); h.textContent = text; h.classList.add('show');
+  clearTimeout(hintT); hintT = setTimeout(()=>h.classList.remove('show'), 2800);
+}
+
+/* --- навигация --- */
+function stopAll(){
+  if (S){ S.dead = true; (S.timers||[]).forEach(clearTimeout); S.timers = []; }
+  if (homeIv){ clearInterval(homeIv); homeIv = null; }
+  closeModal();
+}
+function go(screen, arg){ stopAll(); Screens[screen](arg); window.scrollTo(0,0); }
+function later(fn, ms){
+  const s = S; if (!s) return;
+  const id = setTimeout(()=>{ if (!s.dead) fn(); }, ms);
+  s.timers.push(id); return id;
+}
+
+/* --- прогресс уровней --- */
+const levels = () => C.levels;
+const skillOf = id => D.skills[id] || 0;
+function isUnlocked(i){ return i === 0 || !!D.done[levels()[i-1].id]; }
+function currentLevelIndex(){
+  const L = levels();
+  for (let i=0;i<L.length;i++){ if (L[i].ready && isUnlocked(i) && !D.done[L[i].id]) return i; }
+  let last = 0; L.forEach((l,i)=>{ if (l.ready && isUnlocked(i)) last = i; });
+  return last;
+}
+function starsText(n){ return '★'.repeat(n) + '☆'.repeat(3-n); }
+
+/* ============================================================
+   ЭКРАНЫ
+   ============================================================ */
+const Screens = {
+
+ home(){
+  header('Дрессировка', null);
+  const L = levels(), ci = currentLevelIndex(), lvl = L[ci];
+  const doneCount = L.filter(l=>D.done[l.id]).length;
+  view().innerHTML = `
+   <section class="card hero">
+     <div class="dogwrap" id="homeDog" onclick="App.pet()">${dogSVG()}</div>
+     <h2>${PET.name}</h2>
+     <p class="muted">${PET.breed} · ${ageText()} · ${PET.color} окрас</p>
+     <p class="passport">«${PET.passportName}»</p>
+   </section>
+   <section class="card">
+     <div style="display:flex;justify-content:space-between;align-items:baseline">
+       <h3 style="margin:0">Прогресс</h3><span class="muted">${doneCount} из ${L.length} навыков</span>
+     </div>
+     <div class="skillbar"><i style="width:${doneCount/L.length*100}%"></i></div>
+     <p class="muted" style="margin-top:8px">Доверие: ${Math.round(D.trust)}%</p>
+     <div class="skillbar"><i style="width:${D.trust}%"></i></div>
+   </section>
+   <button class="btn primary big" onclick="App.lesson(${ci})">🎓 ${D.done[lvl.id] ? 'Повторить' : 'Тренироваться'}: ${lvl.title}</button>
+   <div class="grid2">
+     <button class="tile" onclick="go('map')"><span class="ic">🗺️</span><b>Уровни</b></button>
+     <button class="tile" onclick="go('games')"><span class="ic">🎯</span><b>Мини-игры</b></button>
+     <button class="tile" onclick="go('diary')"><span class="ic">📒</span><b>Дневник</b></button>
+     <button class="tile" onclick="go('memo')"><span class="ic">📌</span><b>Памятка</b></button>
+   </div>
+   <button class="btn ghost" style="margin-top:10px" onclick="go('settings')">⚙️ Настройки</button>`;
+  const el = $('#homeDog .dog');
+  setDog({...DOG_RESET, tail:'wag', ears:'perk'}, el);
+  let k = 0;
+  homeIv = setInterval(()=>{
+    k++;
+    const look = k%3 !== 0;
+    setDog({head: look?'look':'away', mouth: k%4===1?'open':'smile', tail: look?'wag':'still'}, el);
+  }, 2400);
+ },
+
+ map(){
+  header('Уровни', 'home');
+  const L = levels();
+  view().innerHTML = `<p class="muted" style="margin:0 4px 10px">Следующий уровень открывается после отметки «Сделали в жизни».</p>` +
+   L.map((l,i)=>{
+     const done = !!D.done[l.id], open = l.ready && isUnlocked(i);
+     const cls = done ? 'done' : open ? 'open' : 'locked';
+     const right = !l.ready ? 'скоро' : done ? starsText(D.stars[l.id]||0) : open ? starsText(D.stars[l.id]||0) : '🔒';
+     return `<button class="lvl ${cls}" onclick="App.openLevel(${i})">
+       <span class="n">${done?'✓':i+1}</span>
+       <span class="t"><b>${t(l.title)}</b><small>${t(l.short)}</small></span>
+       <span class="s">${right}</span></button>`;
+   }).join('');
+ },
+
+ lesson(i){
+  const l = levels()[i];
+  header('Урок ' + (i+1), 'map');
+  view().innerHTML = `
+   <h2>${t(l.title)}</h2>
+   <div class="rule">${t(l.lesson.rule)}</div>
+   <div class="card"><h3>Зачем</h3><p>${t(l.lesson.why)}</p></div>
+   <div class="card"><h3>Как делать</h3><ol>${l.lesson.steps.map(s=>`<li>${t(s)}</li>`).join('')}</ol></div>
+   <div class="card" style="background:#fff3e2"><h3>🎮 В игре</h3><p>${t(l.lesson.game)}</p></div>
+   <button class="btn primary big" onclick="go('prep', ${i})">Начать тренировку</button>
+   ${D.done[l.id] ? `<button class="btn" onclick="go('task', {i:${i}, pct:null})">Задание на сегодня</button>` : ''}`;
+ },
+
+ prep(i){
+  header('Подготовка', 'map');
+  const l = levels()[i];
+  view().innerHTML = `
+   <div class="card"><h3>Где занимаемся</h3><p>Дома, в тихой комнате, без отвлечений. Перед кормлением, когда ${PET.name} бодр${PET.sex==='f'?'а':''} и немного голодн${PET.sex==='f'?'а':'ый'}.</p></div>
+   <h3 style="margin:14px 4px 8px">Чем награждаем?</h3>
+   ${C.rewards.map(r=>`<button class="opt" onclick="App.start(${i}, '${r.id}')"><b>${r.icon} ${r.name}</b><br><span class="muted">${r.note}</span></button>`).join('')}
+   <p class="muted center">10 повторов ≈ 3–4 минуты — нормальная длина сессии.</p>`;
+ },
+
+ train(){ renderTrain(); },
+ review(){ renderReview(); },
+
+ task(arg){
+  const i = arg.i, l = levels()[i];
+  header('Задание на сегодня', 'map');
+  view().innerHTML = `
+   <h2>${t(l.task.title)}</h2>
+   <div class="card"><h3>Упражнение в жизни</h3>
+     <ol>${l.task.steps.map(s=>`<li>${t(s)}</li>`).join('')}</ol></div>
+   <div class="card"><h3>Чек-лист</h3>
+     ${l.task.checklist.map((c,k)=>`<label class="check"><input type="checkbox" onchange="App.chk()"><span>${t(c)}</span></label>`).join('')}
+   </div>
+   <button class="btn primary big" id="didBtn" disabled onclick="App.did(${i}, ${arg.pct==null?'null':arg.pct})">✅ Сделали в жизни</button>
+   <p class="muted center">Отметьте все пункты, когда позанимаетесь с ${PET.nameIns}.</p>`;
+ },
+
+ diary(){
+  header('Дневник', 'home');
+  const L = levels().filter(l=>l.ready);
+  const RT = {easy:'😊 легко', ok:'🙂 нормально', fail:'😕 не получилось'};
+  view().innerHTML = `
+   <div class="card"><h3>Навыки в игре</h3>
+    ${L.map(l=>`<div style="margin:8px 0"><div style="display:flex;justify-content:space-between"><span>${t(l.title)}</span><span class="muted">${skillOf(l.id)}%</span></div><div class="skillbar"><i style="width:${skillOf(l.id)}%"></i></div></div>`).join('')}
+    <p class="muted">80% и выше — навык уверенный, можно усложнять.</p>
+   </div>
+   <div class="card"><h3>Занятия в жизни</h3>
+    ${D.diary.length ? D.diary.slice().reverse().map(e=>`<div class="diary-item"><b>${new Date(e.date).toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</b> · ${e.title}<br><span class="tag">${RT[e.rating]||''}</span>${e.pct!=null?`<span class="tag">в игре ${e.pct}%</span>`:''}</div>`).join('') : '<p class="muted">Пока пусто. Пройдите тренировку и отметьте реальное занятие.</p>'}
+   </div>`;
+ },
+
+ memo(){
+  header('Памятка', 'home');
+  view().innerHTML = `<div class="card"><ul>${C.memo.map(m=>`<li>${t(m)}</li>`).join('')}</ul></div>`;
+ },
+
+ settings(){
+  header('Настройки', 'home');
+  view().innerHTML = `
+   <div class="card"><h3>Питомец</h3>
+    <p><b>${PET.name}</b> — ${PET.breed}, ${PET.sex==='f'?'девочка':'мальчик'}</p>
+    <p class="muted">Родил${PET.sex==='f'?'ась':'ся'}: ${new Date(PET.birth).toLocaleDateString('ru-RU')} · ${ageText()}</p>
+    <p class="passport">«${PET.passportName}»</p></div>
+   <button class="btn" onclick="App.toggleSound(); go('settings')">${D.sound?'🔊 Звук включён':'🔇 Звук выключен'}</button>
+   <button class="btn ghost" onclick="App.askReset()">Сбросить прогресс</button>`;
+ },
+
+ games(){
+  header('Мини-игры', 'home');
+  view().innerHTML = `
+   <button class="opt" onclick="go('moment')"><b>⚡ Поймай момент</b><br><span class="muted">Тренируем тайминг маркера. ${D.moment?`Лучшее: ${D.moment} мс`:''}</span></button>
+   <button class="opt" onclick="go('feel')"><b>🐾 Что чувствует ${PET.name}?</b><br><span class="muted">Учимся читать позу, уши и хвост</span></button>
+   <button class="opt" onclick="go('rquiz')"><b>🧀 Выбери награду</b><br><span class="muted">Какая награда подходит ситуации</span></button>`;
+ },
+
+ moment(){ startMoment(); },
+ feel(){ startFeel(); },
+ rquiz(){ startRQuiz(); }
+};
+
+/* ============================================================
+   ТРЕНИРОВКА
+   ============================================================ */
+function meterHTML(){
+  return `<div class="meters card" style="padding:12px">
+    <div class="meter" id="m-att">👀 Внимание<div class="bar"><i></i></div></div>
+    <div class="meter" id="m-exc">⚡ Возбужд.<div class="bar"><i></i></div></div>
+    <div class="meter" id="m-tru">🤝 Доверие<div class="bar"><i></i></div></div>
+    <div class="meter" id="m-mot">🍖 Мотивация<div class="bar"><i></i></div></div>
+  </div>`;
+}
+function updateMeters(){
+  if (!S) return;
+  const set = (id, v, warn) => { const m = $(id); if (!m) return; m.querySelector('i').style.width = clamp(v)+'%'; m.classList.toggle('warn', !!warn); };
+  set('#m-att', S.att, S.att < 35); set('#m-exc', S.exc, S.exc > 60);
+  set('#m-tru', D.trust, D.trust < 40); set('#m-mot', S.mot, S.mot < 35);
+}
+function updateProgress(){
+  const p = $('#prog'); if (!p || !S) return;
+  p.innerHTML = `<span>Повтор ${Math.min(S.trials+1, S.target)} из ${S.target}</span><span>✓ ${S.success} · навык ${skillOf(S.L.id)}%</span>`;
+}
+function status(text){ const s = $('#status'); if (s) s.textContent = t(text); }
+let fbT;
+function fb(text, kind){
+  const f = $('#fb'); if (!f) return;
+  f.textContent = text; f.className = 'fb show ' + kind;
+  clearTimeout(fbT); fbT = setTimeout(()=>{ f.className = 'fb ' + kind; }, 1300);
+  if (kind === 'bad') sfx('bad');
+}
+function giveTreat(){
+  const tr = $('#treat'); if (!tr) return;
+  tr.textContent = S.R.icon; tr.classList.remove('fly'); void tr.offsetWidth; tr.classList.add('fly');
+}
+
+function startTraining(i, rid){
+  const L = levels()[i], R = C.rewards.find(r=>r.id===rid);
+  S = { kind:'train', L, idx:i, R, target:10, trials:0, success:0, mistakes:{}, att:90, exc:25,
+        mot: 40 + R.value*15, dev:0, stress:false, phase:'idle', timers:[], dead:false, flags:{},
+        situShown:false, situ:null, pauses:0, goodPause:0, extra:false };
+  go('train');
+}
+function renderTrain(){
+  if (!S) return go('home');
+  S.dead = false; S.timers = [];
+  header(t(S.L.title), 'map');
+  const m = S.L.mechanic;
+  let acts = '';
+  if (m === 'name') acts = `<button class="btn" onclick="App.act('call')">📣 Позвать «${PET.name}!»</button>`;
+  if (m === 'sit')  acts = `<button class="btn" onclick="App.act('lure')">🤚 Приманка вверх-назад</button><button class="btn" id="wordBtn" onclick="App.act('word')">🗣️ «Сидеть»</button>`;
+  view().innerHTML = `
+   ${meterHTML()}
+   <div class="prog" id="prog"></div>
+   <div class="stage" id="stage">
+     <div class="fb" id="fb"></div>
+     <div class="treat" id="treat"></div>
+     <div class="dogwrap">${dogSVG()}</div>
+     <div class="status" id="status"></div>
+   </div>
+   ${acts ? `<div class="actions">${acts}</div>` : ''}
+   <div class="yesrow">
+     <button class="pause" onclick="App.act('pause')">⏸<br>Пауза</button>
+     <button class="yes" onclick="App.act('yes')">Да!</button>
+     ${m==='marker' ? `<button class="give" onclick="App.act('give')">${S.R.icon}</button>` : `<span style="width:70px"></span>`}
+   </div>
+   <p class="muted center" style="margin-top:12px">${t(S.L.lesson.game)}</p>`;
+  updateMeters(); updateProgress();
+  nextTrial(true);
+}
+
+function prob(){
+  const sk = skillOf(S.L.id);
+  let p = .62 + sk/100*.35;
+  p *= Math.sqrt(S.att/100);
+  p *= 1 - Math.max(0, S.exc-50)/90;
+  p *= .75 + D.trust/400;
+  p *= .7 + S.mot/170;
+  p *= 1 - S.dev/160;
+  return clamp(p, .06, .95);
+}
+function addSkill(d){
+  const id = S.L.id, v = skillOf(id);
+  if (d > 0 && v >= 70) d = Math.ceil(d/2);
+  D.skills[id] = clamp(v + d); save();
+  if (S.L.mechanic === 'sit' && v < 50 && D.skills[id] >= 50) hint('Навык 50% — теперь можно говорить «Сидеть» перед жестом');
+}
+function addMistake(k){
+  S.mistakes[k] = (S.mistakes[k]||0) + 1;
+  if (k==='late' || k==='repeat' || k==='jumpReward' || k==='noreward') addSkill(-2);
+}
+
+function idleSetup(){
+  const m = S.L.mechanic;
+  S.phase = 'idle'; S.flags = {};
+  if (m === 'marker'){ markerCycle(); }
+  if (m === 'name'){ setDog({...DOG_RESET, head:'away', anim:'sniff'}); status('{name} что-то нюхает на полу'); }
+  if (m === 'sit'){ setDog({...DOG_RESET, pose:'stand'}); status('{name} стоит и смотрит на вас'); }
+}
+function nextTrial(first){
+  if (!S || S.dead) return;
+  if (S.trials >= S.target) return finishSession();
+  if (!S.situShown && S.trials === 5 && !S.extra) { S.situShown = true; return showSituation(); }
+  updateMeters(); updateProgress();
+  if (!first && (S.exc > 60 || S.att < 35) && Math.random() < .5) S.stress = true;
+  if (S.stress){
+    S.phase = 'stress'; S.stressHits = 0;
+    setDog({...DOG_RESET, head:'away', mouth:'yawn'});
+    status('{name} зевает и облизывает нос…');
+    later(()=>{ if (S.stress) setDog({mouth:'lick'}); }, 1300);
+    return;
+  }
+  idleSetup();
+}
+function endTrial(ok, msg){
+  if (S.phase === 'end') return;
+  S.phase = 'end'; S.trials++; S.att = clamp(S.att - 3);
+  if (ok){
+    S.success++; addSkill(S.viaWord ? 8 : 6); S.exc = clamp(S.exc + 2);
+    sfx('ok'); fb('✓ ' + msg, 'good'); setDog({tail:'wag', mouth:'open', anim:'none'});
+  } else fb(msg, 'bad');
+  S.viaWord = false;
+  updateMeters(); updateProgress();
+  later(()=>nextTrial(), 1300);
+}
+function doPause(){
+  S.locked = true; S.pauses++;
+  if (S.stress){ S.stress = false; S.goodPause++; fb('Верно: пауза!', 'good'); }
+  S.exc = clamp(S.exc - 25); S.att = clamp(S.att + 12);
+  setDog({...DOG_RESET, pose:'lie', tail:'wag'});
+  status('Пауза: спокойно гладим, дышим…');
+  updateMeters();
+  later(()=>{ S.locked = false; idleSetup(); }, 1800);
+}
+
+/* --- механики уровней --- */
+function markerCycle(){
+  if (!S || S.phase !== 'idle') return;
+  const jump = Math.random() < .2 + S.exc/400;
+  if (jump){
+    S.dogState = 'jump';
+    setDog({...DOG_RESET, pose:'stand', anim:'jump', tail:'wag', ears:'perk', mouth:'open'});
+    status('{name} прыгает на вас!');
+  } else {
+    S.dogState = 'calm';
+    const pose = Math.random() < .5 ? 'sit' : 'stand';
+    setDog({...DOG_RESET, pose, head: Math.random()<.6?'look':'away', ears: skillOf('marker')>40?'perk':'normal'});
+    status(pose === 'sit' ? '{name} спокойно сидит рядом' : '{name} спокойно стоит рядом');
+  }
+  later(markerCycle, rnd(1800, 2800));
+}
+const Mech = {
+  marker(a){
+    if (a === 'yes'){
+      sfx('click');
+      if (S.phase === 'await'){ addMistake('noreward'); return endTrial(false, 'Второе «Да!» без награды'); }
+      if (S.phase !== 'idle') return;
+      if (S.dogState === 'jump'){ addMistake('jumpReward'); S.exc = clamp(S.exc + 6); return endTrial(false, 'Наградили прыжки'); }
+      S.phase = 'await';
+      setDog({ears:'perk', head:'look', anim:'none'});
+      status('Теперь — награда!');
+      later(()=>{ if (S.phase === 'await'){ addMistake('noreward'); endTrial(false, '«Да!» без награды'); } }, 1500);
+    }
+    if (a === 'give'){
+      if (S.phase === 'await'){ giveTreat(); endTrial(true, '«Да!» + награда'); }
+      else if (S.phase === 'idle') fb('Сначала «Да!», потом награда', 'warn');
+    }
+  },
+  name(a){
+    if (a === 'call'){
+      if (S.phase === 'called'){ addMistake('repeat'); S.dev = clamp(S.dev + 12); S.exc = clamp(S.exc + 6); fb('Повтор имени', 'bad'); updateMeters(); return; }
+      if (S.phase === 'look' || S.phase === 'late'){ fb('Уже смотрит — жмите «Да!»', 'warn'); return; }
+      if (S.phase !== 'idle') return;
+      S.phase = 'called'; status('Вы: «{name}!»');
+      const p = prob();
+      later(()=>{
+        if (S.phase !== 'called') return;
+        if (Math.random() < p){
+          S.phase = 'look'; setDog({head:'look', ears:'perk', anim:'none', tail:'wag'});
+          status('{name} смотрит вам в глаза!');
+          later(()=>{
+            if (S.phase !== 'look') return;
+            S.phase = 'late'; setDog({head:'away', ears:'normal', tail:'still'});
+            status('{Ona} снова отвернул{sya}');
+            later(()=>{ if (S.phase === 'late'){ addMistake('missed'); endTrial(false, 'Упустили момент'); } }, 900);
+          }, 1500);
+        } else {
+          later(()=>{ if (S.phase === 'called'){ endTrial(false, t('Не отозвал{sya}. Не повторяйте!')); status('Подсказка: чмокните губами или отойдите на шаг'); } }, 1800);
+        }
+      }, rnd(400, 900));
+    }
+    if (a === 'yes'){
+      sfx('click');
+      if (S.phase === 'look'){ giveTreat(); endTrial(true, 'Точно в момент!'); }
+      else if (S.phase === 'late'){ addMistake('late'); endTrial(false, 'Поздно'); }
+      else if (S.phase === 'idle' || S.phase === 'called'){ addMistake('early'); fb(t('Рано: {ona} ещё не посмотрел{a}'), 'bad'); }
+    }
+  },
+  sit(a){
+    if (a === 'lure' || a === 'word'){
+      if (['luring','sit','late'].includes(S.phase)){
+        if (a === 'word'){ addMistake('repeat'); S.dev = clamp(S.dev + 10); fb('Повтор команды', 'bad'); }
+        return;
+      }
+      if (S.phase !== 'idle') return;
+      if (a === 'word' && skillOf('sit') < 50){
+        if (S.flags.word){ addMistake('repeat'); S.dev = clamp(S.dev + 10); S.exc = clamp(S.exc + 5); fb('Повтор: слово пока пустое', 'bad'); updateMeters(); return; }
+        S.flags.word = true;
+        status('Слово «Сидеть» пока ничего не значит для {nameGen}. Сначала — приманка');
+        return;
+      }
+      S.phase = 'luring'; S.viaWord = (a === 'word');
+      status(a === 'lure' ? 'Ведёте лакомство от носа вверх-назад…' : 'Вы: «Сидеть»');
+      setDog({head:'up', ears:'perk'});
+      let p = prob(); if (S.viaWord) p *= .85;
+      later(()=>{
+        if (S.phase !== 'luring') return;
+        if (Math.random() < p){
+          S.phase = 'sit'; setDog({pose:'sit', head:'look', tail:'wag'});
+          status('{name} сел{a}!');
+          later(()=>{
+            if (S.phase !== 'sit') return;
+            S.phase = 'late'; setDog({pose:'stand', tail:'still'});
+            status('{Ona} уже встал{a}');
+            later(()=>{ if (S.phase === 'late'){ addMistake('missed'); endTrial(false, 'Упустили момент'); } }, 900);
+          }, 1500);
+        } else {
+          setDog({anim:'jump', pose:'stand'});
+          status(S.viaWord ? '{name} не понял{a} без руки — помогите приманкой' : '{name} подпрыгнул{a} за рукой — держите лакомство у самого носа');
+          later(()=>endTrial(false, S.viaWord ? 'Не сработало без жеста' : 'Рука слишком высоко'), 1100);
+        }
+      }, rnd(500, 1100));
+    }
+    if (a === 'yes'){
+      sfx('click');
+      if (S.phase === 'sit'){ giveTreat(); endTrial(true, S.viaWord ? 'По слову — отлично!' : 'Точно!'); }
+      else if (S.phase === 'late'){ addMistake('late'); endTrial(false, t('Поздно: {ona} уже встал{a}')); }
+      else if (S.phase === 'idle' || S.phase === 'luring'){ addMistake('early'); fb(t('Рано: {ona} ещё не сел{a}'), 'bad'); }
+    }
+  }
+};
+
+function showSituation(){
+  const sit = C.situations[Math.floor(Math.random()*C.situations.length)];
+  S.situQ = sit;
+  S.phase = 'situ';
+  setDog({...DOG_RESET, pose:'stand', head:'look'});
+  status('Ситуация!');
+  openModal(`<h3>🐾 Ситуация</h3><p style="font-size:17px">${t(sit.q)}</p><p class="muted">Что сделаете?</p>
+    ${sit.opts.map((o,k)=>`<button class="opt" onclick="App.situ(${k})">${t(o.t)}</button>`).join('')}`);
+}
+
+function finishSession(){
+  if (S.long) addMistake('long');
+  const pct = Math.round(S.success / S.trials * 100);
+  const stars = pct >= 80 ? 3 : pct >= 60 ? 2 : pct >= 40 ? 1 : 0;
+  S.pct = pct; S.stars = stars;
+  D.stars[S.L.id] = Math.max(D.stars[S.L.id]||0, stars);
+  save();
+  go('review');
+}
+function renderReview(){
+  if (!S) return go('home');
+  header('Разбор', 'map');
+  const M = C.mistakes;
+  const keys = Object.keys(S.mistakes).filter(k=>k!=='situation');
+  const sk = skillOf(S.L.id);
+  let verdict = S.pct >= 80 ? 'Отлично! В игре навык уверенный.' : S.pct >= 60 ? 'Хорошо. Ещё пара тренировок — и будет уверенно.' : S.pct >= 40 ? 'Неплохо для начала. Обратите внимание на ошибки ниже.' : 'Пока сложно. Перечитайте урок и попробуйте ещё раз.';
+  view().innerHTML = `
+   <div class="card center">
+     <div class="pct">${S.pct}%</div>
+     <div class="stars">${starsText(S.stars)}</div>
+     <p>${verdict}</p>
+     <p class="muted">Навык «${t(S.L.title)}» в игре: ${sk}%${sk>=80?' — можно усложнять':''}</p>
+   </div>
+   ${S.goodPause ? `<div class="mist good"><b>✓ Заметили стресс и сделали паузу${S.goodPause>1?' ×'+S.goodPause:''}</b><div class="think">Так и надо: короткая пауза сохраняет желание заниматься.</div></div>` : ''}
+   ${S.situ ? `<div class="mist ${S.situ.ok?'good':''}"><b>${S.situ.ok?'✓':'✗'} Ситуация: ${t(S.situQ.q)}</b><div class="think">${t(S.situ.e)}</div></div>` : ''}
+   ${keys.length ? `<h3 style="margin:14px 4px 4px">Ошибки</h3>` : `<div class="mist good"><b>✓ Без ошибок в тайминге</b></div>`}
+   ${keys.map(k=>`<div class="mist"><b>${M[k].title}${S.mistakes[k]>1?' ×'+S.mistakes[k]:''}</b>${t(M[k].text)}<div class="think">Что подумал${PET.sex==='f'?'а':''} ${PET.name}: ${t(M[k].think)}</div></div>`).join('')}
+   <div style="margin-top:14px">
+     ${S.stars >= 1 ? `<button class="btn primary big" onclick="go('task', {i:${S.idx}, pct:${S.pct}})">📋 К заданию на сегодня</button>` : ''}
+     <button class="btn" onclick="go('prep', ${S.idx})">🔁 Повторить тренировку</button>
+     ${!S.extra ? `<button class="btn ghost" onclick="App.extra()">Ещё 5 повторов</button>` : ''}
+   </div>`;
+}
+
+/* ============================================================
+   МИНИ-ИГРЫ
+   ============================================================ */
+function startMoment(){
+  header('Поймай момент', 'games');
+  S = {kind:'moment', timers:[], dead:false, round:0, hits:0, early:0, miss:0, times:[], phase:'wait'};
+  view().innerHTML = `
+   <p class="muted center">${PET.name} то стоит, то садится. Жмите «Да!» сразу, как только ${PET.sex==='f'?'она':'он'} сядет. Цель — быстрее 1 секунды.</p>
+   <div class="prog" id="prog"></div>
+   <div class="stage" id="stage"><div class="fb" id="fb"></div><div class="dogwrap">${dogSVG()}</div><div class="status" id="status">Приготовьтесь…</div></div>
+   <div class="yesrow"><button class="yes" onclick="App.momentTap()">Да!</button></div>`;
+  later(momentRound, 900);
+}
+function momentRound(){
+  if (S.round >= 12) return momentEnd();
+  S.round++; S.phase = 'wait';
+  $('#prog').innerHTML = `<span>Раунд ${S.round} из 12</span><span>✓ ${S.hits}</span>`;
+  setDog({...DOG_RESET, pose:'stand'}); status('Ждём…');
+  later(()=>{
+    if (S.phase !== 'wait') return;
+    S.phase = 'sit'; S.t0 = performance.now(); setDog({pose:'sit', tail:'wag'}); status(t('Сел{a}!'));
+    later(()=>{ if (S.phase === 'sit'){ S.miss++; S.phase = 'done'; fb('Пропустили', 'bad'); later(momentRound, 700); } }, 1100);
+  }, rnd(900, 2700));
+}
+function momentEnd(){
+  const avg = S.times.length ? Math.round(S.times.reduce((a,b)=>a+b,0)/S.times.length) : null;
+  if (avg && S.hits >= 8 && (!D.moment || avg < D.moment)){ D.moment = avg; save(); }
+  const g = avg == null ? 'Попробуйте ещё раз.' : avg < 600 ? 'Супер! Такой тайминг — как у профессионала.' : avg < 1000 ? 'Хорошо: укладываетесь в окно маркера.' : 'Медленно: собака уже может делать что-то другое.';
+  view().innerHTML = `<div class="card center"><h2>Результат</h2>
+    <div class="pct">${avg!=null?avg+' мс':'—'}</div><p>${g}</p>
+    <p class="muted">Попаданий: ${S.hits} · рано: ${S.early} · пропущено: ${S.miss}</p></div>
+    <button class="btn primary" onclick="go('moment')">Ещё раз</button><button class="btn" onclick="go('games')">К мини-играм</button>`;
+}
+function startFeel(){
+  header('Что чувствует ' + PET.name + '?', 'games');
+  S = {kind:'feel', timers:[], dead:false, i:0, score:0, items: shuffle(C.feelings)};
+  feelQ();
+}
+function feelQ(){
+  if (S.i >= S.items.length) return quizEnd(S.score, S.items.length, 'feel');
+  const q = S.items[S.i];
+  view().innerHTML = `<div class="prog"><span>Вопрос ${S.i+1} из ${S.items.length}</span><span>✓ ${S.score}</span></div>
+   <div class="stage" id="stage"><div class="dogwrap">${dogSVG()}</div></div>
+   <p style="font-weight:600">Что ${PET.sex==='f'?'она':'он'} сейчас чувствует?</p>
+   ${C.feelOpts.map(o=>`<button class="opt" data-id="${o.id}" onclick="App.feelAns('${o.id}')">${o.t}</button>`).join('')}
+   <div id="expl"></div>`;
+  setDog(q.dog);
+}
+function startRQuiz(){
+  header('Выбери награду', 'games');
+  S = {kind:'rquiz', timers:[], dead:false, i:0, score:0, items: shuffle(C.rewardQuiz)};
+  rQ();
+}
+function rQ(){
+  if (S.i >= S.items.length) return quizEnd(S.score, S.items.length, 'rquiz');
+  const q = S.items[S.i];
+  const label = id => id === 'later' ? '⏳ Перенести занятие' : (r => r.icon + ' ' + r.name)(C.rewards.find(r=>r.id===id));
+  view().innerHTML = `<div class="prog"><span>Ситуация ${S.i+1} из ${S.items.length}</span><span>✓ ${S.score}</span></div>
+   <div class="card"><p style="font-size:17px;margin:0">${t(q.q)}</p></div>
+   ${q.opts.map(id=>`<button class="opt" data-id="${id}" onclick="App.rAns('${id}')">${label(id)}</button>`).join('')}
+   <div id="expl"></div>`;
+}
+function markAnswer(chosen, right, expl, nextFn){
+  document.querySelectorAll('.opt').forEach(b=>{
+    b.disabled = true;
+    if (b.dataset.id === right) b.classList.add('right');
+    else if (b.dataset.id === chosen) b.classList.add('wrong');
+  });
+  const ok = chosen === right; if (ok){ S.score++; sfx('ok'); } else sfx('bad');
+  $('#expl').innerHTML = `<div class="mist ${ok?'good':''}"><b>${ok?'Верно!':'Не совсем.'}</b>${t(expl)}</div><button class="btn primary" onclick="App.${nextFn}()">Дальше</button>`;
+}
+function quizEnd(score, total, again){
+  view().innerHTML = `<div class="card center"><h2>Готово!</h2><div class="pct">${score} / ${total}</div>
+   <p>${score===total?'Идеально!':score>=total*0.6?'Хороший результат.':'Стоит пройти ещё раз.'}</p></div>
+   <button class="btn primary" onclick="go('${again}')">Ещё раз</button><button class="btn" onclick="go('games')">К мини-играм</button>`;
+}
+
+/* ============================================================
+   ДЕЙСТВИЯ (вызываются из кнопок)
+   ============================================================ */
+const App = {
+  lesson(i){ go('lesson', i); },
+  openLevel(i){
+    const l = levels()[i];
+    if (!l.ready) return hint('Этот уровень в разработке');
+    if (!isUnlocked(i)) return hint('Сначала пройдите предыдущий уровень и отметьте «Сделали в жизни»');
+    go('lesson', i);
+  },
+  start(i, rid){ audioInit(); startTraining(i, rid); },
+  act(a){
+    if (!S || S.dead || S.kind !== 'train' || S.locked || S.phase === 'situ') return;
+    audioInit();
+    if (a === 'pause') return doPause();
+    if (S.stress){
+      addMistake('stress'); D.trust = clamp(D.trust - 3); S.exc = clamp(S.exc + 8); save();
+      fb('Сначала пауза — она устала', 'bad'); updateMeters();
+      S.stressHits = (S.stressHits||0) + 1;
+      if (S.stressHits >= 2) status('Подсказка: нажмите «Пауза»');
+      return;
+    }
+    Mech[S.L.mechanic](a);
+  },
+  situ(k){
+    const o = S.situQ.opts[k];
+    S.situ = o; D.trust = clamp(D.trust + o.trust); save();
+    if (!o.ok) S.mistakes.situation = 1;
+    o.ok ? sfx('ok') : sfx('bad');
+    openModal(`<h3>${o.ok?'✓ Верно':'✗ Не лучший вариант'}</h3><p>${t(o.e)}</p>
+      ${o.trust ? `<p class="muted">Доверие ${o.trust>0?'+':''}${o.trust}</p>` : ''}
+      <button class="btn primary" onclick="App.situDone()">Продолжить тренировку</button>`);
+  },
+  situDone(){ closeModal(); updateMeters(); idleSetup(); updateProgress(); },
+  extra(){
+    S.extra = true; S.long = true; S.target += 5; S.att = clamp(S.att - 30); S.exc = clamp(S.exc + 10);
+    stopAll(); S.dead = false; Screens.train();
+  },
+  chk(){
+    const all = [...document.querySelectorAll('.check input')].every(c=>c.checked);
+    $('#didBtn').disabled = !all;
+  },
+  did(i, pct){
+    openModal(`<h3>Как прошло?</h3>
+      <button class="opt" onclick="App.rate(${i}, ${pct}, 'easy')">😊 Легко</button>
+      <button class="opt" onclick="App.rate(${i}, ${pct}, 'ok')">🙂 Нормально</button>
+      <button class="opt" onclick="App.rate(${i}, ${pct}, 'fail')">😕 Не получилось</button>`);
+  },
+  rate(i, pct, r){
+    const l = levels()[i];
+    D.diary.push({date: new Date().toISOString(), level: l.id, title: t(l.title), rating: r, pct});
+    const wasDone = !!D.done[l.id];
+    if (r !== 'fail') D.done[l.id] = true;
+    save();
+    if (r === 'fail'){
+      openModal(`<h3>Ничего страшного</h3><p>${t(l.tipFail)}</p><p class="muted">Повторите тренировку и попробуйте завтра ещё раз.</p>
+        <button class="btn primary" onclick="go('lesson', ${i})">К уроку</button>`);
+      return;
+    }
+    sfx('bark');
+    const next = levels()[i+1];
+    const nextTxt = !wasDone && next ? (next.ready ? `Открыт уровень ${i+2}: «${t(next.title)}».` : `Следующий уровень «${t(next.title)}» скоро появится.`) : '';
+    openModal(`<h3>🎉 Молодцы!</h3><p>Занятие записано в дневник. ${nextTxt}</p>
+      <p class="muted">Повторяйте это упражнение 2–3 раза в день несколько дней подряд.</p>
+      <button class="btn primary" onclick="go('${next && next.ready && !wasDone ? 'map' : 'home'}')">${next && next.ready && !wasDone ? 'К уровням' : 'На главную'}</button>`);
+  },
+  feelAns(id){ const q = S.items[S.i]; markAnswer(id, q.a, q.e, 'feelNext'); },
+  feelNext(){ S.i++; feelQ(); },
+  rAns(id){ const q = S.items[S.i]; markAnswer(id, q.a, q.e, 'rNext'); },
+  rNext(){ S.i++; rQ(); },
+  momentTap(){
+    if (!S || S.kind !== 'moment') return;
+    sfx('click');
+    if (S.phase === 'sit'){
+      const dt = performance.now() - S.t0; S.times.push(dt); S.hits++; S.phase = 'done';
+      fb((dt < 600 ? 'Идеально! ' : 'Хорошо: ') + Math.round(dt) + ' мс', 'good');
+      later(momentRound, 700);
+    } else if (S.phase === 'wait'){ S.early++; fb('Рано!', 'bad'); }
+  },
+  pet(){ audioInit(); sfx('bark'); const el = $('#homeDog .dog'); setDog({anim:'jump', mouth:'open'}, el); setTimeout(()=>setDog({anim:'none'}, el), 900); },
+  toggleSound(){ D.sound = !D.sound; save(); $('#snd').textContent = D.sound ? '🔊' : '🔇'; },
+  askReset(){
+    openModal(`<h3>Сбросить прогресс?</h3><p>Уровни, звёзды, навыки и дневник будут удалены. Это нельзя отменить.</p>
+      <button class="btn primary" style="background:var(--bad);box-shadow:none" onclick="App.reset()">Да, сбросить</button>
+      <button class="btn" onclick="closeModal()">Отмена</button>`);
+  },
+  reset(){ D = freshData(); save(); closeModal(); go('home'); hint('Прогресс сброшен'); }
+};
+
+function freshData(){ return {skills:{}, stars:{}, done:{}, diary:[], trust:70, sound:true, moment:null}; }
+
+/* ============================================================
+   ЗАПУСК. Для «Лапок»: init({...питомец})
+   ============================================================ */
+function init(petConfig){
+  PET = Object.assign({}, DEFAULT_PET, petConfig || {});
+  if (!PET.nameAcc) PET.nameAcc = PET.name;
+  if (!PET.nameGen) PET.nameGen = PET.name;
+  if (!PET.nameDat) PET.nameDat = PET.name;
+  if (!PET.nameIns) PET.nameIns = PET.name;
+  C = CONTENT[PET.species] || CONTENT.dog;
+  D = Object.assign(freshData(), store.load() || {});
+  document.title = PET.name + ': дрессировка';
+  $('#back').onclick = () => go(backTo || 'home');
+  $('#snd').onclick = () => { audioInit(); App.toggleSound(); };
+  $('#modal').onclick = e => { if (e.target.id === 'modal' && !(S && S.phase === 'situ')) closeModal(); };
+  go('home');
+}
+init(DEFAULT_PET);
+</script>
+</body>
+</html>
